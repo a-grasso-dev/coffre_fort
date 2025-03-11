@@ -17,10 +17,18 @@ namespace Coffre_fort
     /// </summary>
     public partial class MainWindow : Window
     {
+        private PasswordViewModel _viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new PasswordViewModel();
+            _viewModel = new PasswordViewModel();
+            DataContext = _viewModel;
+        }
+
+        private void AddPasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AddPassword(NomCompteBox.Text, MotDePasseBox.Password);
         }
     }
 }

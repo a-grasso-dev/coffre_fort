@@ -7,26 +7,11 @@
         mc:Ignorable="d"
         Title="Coffre_Fort" Height="350" Width="525">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Orientation="Horizontal" Margin="10">
-            <TextBox x:Name="SearchBox" Width="200" Height="30" Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Content="Rechercher" Width="100" Height="30" Command="{Binding SearchCommand}"/>
-            <Button Content="Ajouter" Width="100" Height="30" Command="{Binding AddCommand}"/>
+        <StackPanel Margin="10">
+            <TextBox x:Name="NomCompteBox" Text="Nom du compte" Width="200"/>
+            <PasswordBox x:Name="MotDePasseBox" Width="200"/>
+            <Button Content="Ajouter" Click="AddPasswordButton_Click"/>
+            <ListBox ItemsSource="{Binding Passwords}" DisplayMemberPath="NomCompte"/>
         </StackPanel>
-
-        <ListBox Grid.Row="1" ItemsSource="{Binding Passwords}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding NomCompte}" FontWeight="Bold" Width="150"/>
-                        <TextBlock Text="{Binding MotDePasseDechiffre}" Width="200"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
     </Grid>
 </Window>

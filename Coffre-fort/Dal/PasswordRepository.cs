@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+
+public class PasswordRepository
+{
+    public void AddPassword(string nomCompte, string motDePasse)
+    {
+        using (var db = new PasswordDbContext())
+        {
+            var entry = new PasswordEntry
+            {
+                NomCompte = nomCompte,
+                MotDePasse = motDePasse,
+                DateAjout = DateTime.Now
+            };
+            db.passwordentry.Add(entry);
+            db.SaveChanges();
+        }
+    }
+
+    public List<PasswordEntry> GetAllPasswords()
+    {
+        using (var db = new PasswordDbContext())
+        {
+            return db.passwordentry.ToList();
+        }
+    }
+
+    public List<PasswordEntry> SearchPasswords(string search)
+    {
+        using (var db = new PasswordDbContext())
+        {
+            return db.passwordentry.Where(p => p.NomCompte.Contains(search)).ToList();
+        }
+    }
+}
