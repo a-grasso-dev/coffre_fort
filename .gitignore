@@ -1,0 +1,65 @@
+# Fichiers binaires et compilés
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.ilk
+*.log
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.ide
+*.sln.iml
+
+# Dossiers et fichiers spécifiques à Visual Studio
+.vscode/
+.vs/
+.idea/
+*.suo
+*.ncb
+*.pdb
+*.aps
+*.res
+*.bak
+
+# Fichiers générés
+GeneratedFiles/
+TestResults/
+Backup/
+
+# Packages NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Configuration utilisateur et secrets
+secrets.json
+appsettings.json
+appsettings.Development.json
+
+# JetBrains Rider
+.idea/
+out/
+
+# Fichiers de chiffrement sensibles (ex: clés, certificats)
+*.key
+*.pfx
+*.pem
+*.crt
+*.cer
+
+# Logs et fichiers temporaires
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Cache de dépendances
+node_modules/
+
+# Dépendances Python (si utilisées)
+venv/
+__pycache__/
