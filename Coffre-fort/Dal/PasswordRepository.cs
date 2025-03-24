@@ -35,4 +35,18 @@ public class PasswordRepository
             return db.passwordentry.Where(p => p.NomCompte.Contains(search)).ToList();
         }
     }
+
+    public void UpdatePassword(int id, string newPassword)
+    {
+        using (var db = new PasswordDbContext())
+        {
+            var entry = db.passwordentry.FirstOrDefault(p => p.Id == id);
+            if (entry != null)
+            {
+                entry.MotDePasse = newPassword;
+                db.SaveChanges();
+            }
+        }
+    }
+
 }

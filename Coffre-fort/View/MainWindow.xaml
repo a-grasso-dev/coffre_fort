@@ -8,10 +8,24 @@
         Title="Coffre_Fort" Height="350" Width="525">
     <Grid>
         <StackPanel Margin="10">
-            <TextBox x:Name="NomCompteBox" Text="Nom du compte" Width="200"/>
+
+            <TextBlock Text="Ajouter un mot de passe"/>
+            <TextBox x:Name="NomCompteBox" Width="200"/>
             <PasswordBox x:Name="MotDePasseBox" Width="200"/>
             <Button Content="Ajouter" Click="AddPasswordButton_Click"/>
-            <ListBox ItemsSource="{Binding Passwords}" DisplayMemberPath="NomCompte"/>
+
+            <Separator Margin="5"/>
+
+            <TextBlock Text="Modifier le mot de passe sélectionné"/>
+            <PasswordBox x:Name="NewPasswordBox" Width="200"/>
+            <Button Content="Mettre à jour" Click="UpdatePasswordButton_Click"/>
+
+            <Separator Margin="5"/>
+
+            <ListBox x:Name="PasswordListBox"
+                     ItemsSource="{Binding Passwords}"
+                     DisplayMemberPath="NomCompte"
+                     SelectedItem="{Binding SelectedEntry, Mode=TwoWay}" />
         </StackPanel>
     </Grid>
 </Window>

@@ -29,6 +29,17 @@ namespace Coffre_fort
         private void AddPasswordButton_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.AddPassword(NomCompteBox.Text, MotDePasseBox.Password);
+            NomCompteBox.Clear();
+            MotDePasseBox.Clear();
+        }
+
+        private void UpdatePasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PasswordListBox.SelectedItem is PasswordEntry selected)
+            {
+                _viewModel.UpdatePassword(selected, NewPasswordBox.Password);
+                NewPasswordBox.Clear();
+            }
         }
     }
 }

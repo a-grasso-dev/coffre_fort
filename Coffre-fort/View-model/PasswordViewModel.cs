@@ -37,4 +37,21 @@ public class PasswordViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    public void UpdatePassword(PasswordEntry entryToUpdate, string newPassword)
+    {
+        if (entryToUpdate == null || string.IsNullOrEmpty(newPassword))
+            return;
+
+        _repository.UpdatePassword(entryToUpdate.Id, newPassword);
+        LoadPasswords();
+    }
+
+    private PasswordEntry _selectedEntry;
+    public PasswordEntry SelectedEntry
+    {
+        get => _selectedEntry;
+        set { _selectedEntry = value; OnPropertyChanged(nameof(SelectedEntry)); }
+    }
+
 }
