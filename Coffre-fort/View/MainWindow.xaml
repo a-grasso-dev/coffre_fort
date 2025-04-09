@@ -9,23 +9,26 @@
     <Grid>
         <StackPanel Margin="10">
 
-            <TextBlock Text="Ajouter un mot de passe"/>
+            <!-- Ajouter un mot de passe -->
+            <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
+            <Label Content="Nom du compte" HorizontalAlignment="Center" />
             <TextBox x:Name="NomCompteBox" Width="200"/>
+            <Label Content="Mot de passe" HorizontalAlignment="Center" />
             <PasswordBox x:Name="MotDePasseBox" Width="200"/>
-            <Button Content="Ajouter" Click="AddPasswordButton_Click"/>
 
-            <Separator Margin="5"/>
-
-            <TextBlock Text="Modifier le mot de passe sélectionné"/>
-            <PasswordBox x:Name="NewPasswordBox" Width="200"/>
-            <Button Content="Mettre à jour" Click="UpdatePasswordButton_Click"/>
-
-            <Separator Margin="5"/>
-
+            <!-- Liste des mots de passe -->
             <ListBox x:Name="PasswordListBox"
                      ItemsSource="{Binding Passwords}"
                      DisplayMemberPath="NomCompte"
                      SelectedItem="{Binding SelectedEntry, Mode=TwoWay}" />
+
+            <!-- Modifier le mot de passe du compte sélectionné -->
+            <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold"/>
+            <Label Content="Nouveau mot de passe" HorizontalAlignment="Center" />
+            <PasswordBox x:Name="NewPasswordBox" Width="200"/>
+                        
+            <Button Content="Mettre à jour" Click="UpdatePasswordButton_Click"/>
+
         </StackPanel>
     </Grid>
 </Window>
