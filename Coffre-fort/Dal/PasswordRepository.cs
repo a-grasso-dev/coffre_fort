@@ -49,4 +49,18 @@ public class PasswordRepository
         }
     }
 
+    public void DeletePassword(int id)
+    {
+        using (var db = new PasswordDbContext())
+        {
+            var entry = db.passwordentry.FirstOrDefault(p => p.Id == id);
+            if (entry != null)
+            {
+                db.passwordentry.Remove(entry);
+                db.SaveChanges();
+            }
+        }
+    }
+
+
 }
