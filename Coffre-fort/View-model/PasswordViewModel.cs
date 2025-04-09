@@ -54,4 +54,14 @@ public class PasswordViewModel : INotifyPropertyChanged
         set { _selectedEntry = value; OnPropertyChanged(nameof(SelectedEntry)); }
     }
 
+    public void DeletePassword(PasswordEntry entry)
+    {
+        if (entry == null)
+            return;
+
+        _repository.DeletePassword(entry.Id);
+        LoadPasswords();
+    }
+
+
 }

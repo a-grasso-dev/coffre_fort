@@ -41,5 +41,19 @@ namespace Coffre_fort
                 NewPasswordBox.Clear();
             }
         }
+
+        private void DeletePasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PasswordListBox.SelectedItem is PasswordEntry selected)
+            {
+                var result = MessageBox.Show($"Supprimer le mot de passe pour '{selected.NomCompte}' ?", "Confirmer la suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _viewModel.DeletePassword(selected);
+                }
+            }
+        }
+
     }
 }
