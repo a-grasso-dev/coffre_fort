@@ -8,7 +8,6 @@
         Title="Coffre-Fort" Height="500" Width="600">
     <Grid>
         <StackPanel Margin="10">
-
             <!-- Ajouter un mot de passe -->
             <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
             <Label Content="Nom du compte" />
@@ -21,6 +20,14 @@
                     Width="100" Margin="0,5,0,10"
                     Command="{Binding AddPasswordCommand}" />
 
+            <!-- Recherche -->
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                <TextBox Width="200"
+             Text="{Binding Recherche, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Content="Rechercher"
+            Width="100" Margin="10,0,0,0"
+            Command="{Binding SearchCommand}" />
+            </StackPanel>
 
             <!-- Liste des mots de passe -->
             <ListBox x:Name="PasswordListBox"
