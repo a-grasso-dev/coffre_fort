@@ -19,9 +19,18 @@
 
             <!-- Liste des mots de passe -->
             <ListBox x:Name="PasswordListBox"
-                     ItemsSource="{Binding Passwords}"
-                     DisplayMemberPath="NomCompte"
-                     SelectedItem="{Binding SelectedEntry, Mode=TwoWay}" />
+             ItemsSource="{Binding Passwords}"
+             SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding NomCompte}" Width="150" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding MotDePasseMasque}" Width="200" FontStyle="Italic" Foreground="Gray"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
 
             <!-- Modifier le mot de passe du compte sélectionné -->
             <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold"/>

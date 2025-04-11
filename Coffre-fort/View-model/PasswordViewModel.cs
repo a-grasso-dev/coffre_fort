@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Coffre_fort.View_model;
 
 public class PasswordViewModel : INotifyPropertyChanged
 {
@@ -19,9 +20,11 @@ public class PasswordViewModel : INotifyPropertyChanged
 
     public void AddPassword(string nomCompte, string motDePasse)
     {
-        _repository.AddPassword(nomCompte, motDePasse);
-        LoadPasswords(); // Rafraîchir la liste
+        string motDePasseChiffre = SecurityHelper.Encrypt(motDePasse);
+        _repository.AddPassword(nomCompte, motDePasseChiffre);
+        LoadPasswords();
     }
+
 
     private void LoadPasswords()
     {
@@ -43,9 +46,12 @@ public class PasswordViewModel : INotifyPropertyChanged
         if (entryToUpdate == null || string.IsNullOrEmpty(newPassword))
             return;
 
-        _repository.UpdatePassword(entryToUpdate.Id, newPassword);
+        string motDePasseChiffre = SecurityHelper.Encrypt(newPassword);
+        _repository.UpdatePassword(entryToUpdate.Id, motDePasseChiffre);
+
         LoadPasswords();
     }
+
 
     private PasswordEntry _selectedEntry;
     public PasswordEntry SelectedEntry
