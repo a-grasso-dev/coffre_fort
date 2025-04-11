@@ -36,18 +36,19 @@ public class PasswordRepository
         }
     }
 
-    public void UpdatePassword(int id, string newPassword)
+    public void UpdatePassword(int id, string newEncryptedPassword)
     {
         using (var db = new PasswordDbContext())
         {
             var entry = db.passwordentry.FirstOrDefault(p => p.Id == id);
             if (entry != null)
             {
-                entry.MotDePasse = newPassword;
+                entry.MotDePasse = newEncryptedPassword;
                 db.SaveChanges();
             }
         }
     }
+
 
     public void DeletePassword(int id)
     {
