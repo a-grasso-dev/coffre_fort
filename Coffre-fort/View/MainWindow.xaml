@@ -3,46 +3,57 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Coffre_fort"
+        xmlns:utils="clr-namespace:Coffre_fort.Utils"
         mc:Ignorable="d"
-        Title="Coffre_Fort" Height="350" Width="525">
+        Title="Coffre-Fort" Height="500" Width="600">
     <Grid>
         <StackPanel Margin="10">
 
             <!-- Ajouter un mot de passe -->
             <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
-            <Label Content="Nom du compte" HorizontalAlignment="Left" />
-            <TextBox x:Name="NomCompteBox" Width="200" HorizontalAlignment="Left"/>
-            <Label Content="Mot de passe" HorizontalAlignment="Left" />
-            <PasswordBox x:Name="MotDePasseBox" Width="200" HorizontalAlignment="Left"/>
-            <Button Content="Ajouter" Click="AddPasswordButton_Click"/>
+            <Label Content="Nom du compte" />
+            <TextBox Width="200" Text="{Binding NomCompte, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Mot de passe" />
+            <PasswordBox Width="200"
+                     utils:PasswordBoxHelper.BindPassword="True"
+                     utils:PasswordBoxHelper.BoundPassword="{Binding MotDePasse, Mode=TwoWay}" />
+            <Button Content="Ajouter"
+                    Width="100" Margin="0,5,0,10"
+                    Command="{Binding AddPasswordCommand}" />
+
 
             <!-- Liste des mots de passe -->
             <ListBox x:Name="PasswordListBox"
-             ItemsSource="{Binding Passwords}"
-             SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
+                     ItemsSource="{Binding Passwords}"
+                     SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding NomCompte}" Width="150" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding MotDePasseMasque}" Width="200" FontStyle="Italic" Foreground="Gray"/>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <TextBlock Text="{Binding NomCompte}" Width="150"/>
+                            <TextBlock Text="{Binding AffichageMotDePasse}" Width="150" Margin="10,0,0,0"/>
+                            <Button Content="👁️" Width="30"
+                                    Command="{Binding DataContext.TogglePasswordVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
-
             <!-- Modifier le mot de passe du compte sélectionné -->
-            <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold"/>
-            <Label Content="Nouveau mot de passe" HorizontalAlignment="Left" />
-
+            <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold" Margin="0,10,0,0"/>
+            <Label Content="Nouveau mot de passe" />
             <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                <PasswordBox x:Name="NewPasswordBox" Width="200" Margin="0,0,5,0"/>
-                <Button Content="Mettre à jour" Click="UpdatePasswordButton_Click" Width="100" Margin="0,0,5,0"/>
-                <Button Content="Supprimer" Click="DeletePasswordButton_Click" Width="100"/>
+                <PasswordBox Width="200" Margin="0,0,5,0"
+                             utils:PasswordBoxHelper.BindPassword="True"
+                             utils:PasswordBoxHelper.BoundPassword="{Binding NouveauMotDePasse, Mode=TwoWay}" />
+                <Button Content="Mettre à jour"
+                        Command="{Binding UpdatePasswordCommand}"
+                        Width="100" Margin="0,0,5,0"/>
+                <Button Content="Supprimer"
+                        Command="{Binding DeletePasswordCommand}"
+                        CommandParameter="{Binding SelectedEntry}"
+                        Width="100"/>
             </StackPanel>
-
-
         </StackPanel>
     </Grid>
 </Window>

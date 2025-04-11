@@ -1,14 +1,5 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Coffre_fort.View_model;
 
 namespace Coffre_fort
 {
@@ -26,32 +17,11 @@ namespace Coffre_fort
             DataContext = _viewModel;
         }
 
-        private void AddPasswordButton_Click(object sender, RoutedEventArgs e)
+        private void MotDePasseBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            _viewModel.AddPassword(NomCompteBox.Text, MotDePasseBox.Password);
-            NomCompteBox.Clear();
-            MotDePasseBox.Clear();
-        }
-
-        private void UpdatePasswordButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (PasswordListBox.SelectedItem is PasswordEntry selected)
+            if (DataContext is PasswordViewModel vm && sender is PasswordBox pb)
             {
-                _viewModel.UpdatePassword(selected, NewPasswordBox.Password);
-                NewPasswordBox.Clear();
-            }
-        }
-
-        private void DeletePasswordButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (PasswordListBox.SelectedItem is PasswordEntry selected)
-            {
-                var result = MessageBox.Show($"Supprimer le mot de passe pour '{selected.NomCompte}' ?", "Confirmer la suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    _viewModel.DeletePassword(selected);
-                }
+                vm.MotDePasse = pb.Password;
             }
         }
 
