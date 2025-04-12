@@ -12,6 +12,9 @@ public class PasswordViewModel : INotifyPropertyChanged
     private string _motDePasse;
     private string _nouveauMotDePasse;
     private string _recherche;
+    private bool _triAscendant = true;
+
+    private List<PasswordEntry> _allPasswords;
 
     public ObservableCollection<PasswordEntry> Passwords
     {
@@ -46,7 +49,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     public string Recherche
     {
         get => _recherche;
-        set { _recherche = value; OnPropertyChanged(nameof(Recherche)); }
+        set { _recherche = value; OnPropertyChanged(nameof(Recherche)); AppliquerFiltrageEtTri(); }
     }
 
     public ICommand TogglePasswordVisibilityCommand { get; }
@@ -54,6 +57,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     public ICommand UpdatePasswordCommand { get; }
     public ICommand DeletePasswordCommand { get; }
     public ICommand SearchCommand { get; }
+    public ICommand ToggleSortCommand { get; }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -99,14 +103,13 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         SearchCommand = new RelayCommand(param =>
         {
-            if (!string.IsNullOrWhiteSpace(Recherche))
-            {
-                SearchPasswords(Recherche);
-            }
-            else
-            {
-                LoadPasswords();
-            }
+            AppliquerFiltrageEtTri();
+        });
+
+        ToggleSortCommand = new RelayCommand(param =>
+        {
+            _triAscendant = !_triAscendant;
+            AppliquerFiltrageEtTri();
         });
 
         LoadPasswords();
@@ -138,22 +141,32 @@ public class PasswordViewModel : INotifyPropertyChanged
         LoadPasswords();
     }
 
-    public void SearchPasswords(string search)
-    {
-        Passwords = new ObservableCollection<PasswordEntry>(_repository.SearchPasswords(search));
-        OnPropertyChanged(nameof(Passwords));
-    }
-
     private void LoadPasswords()
     {
-        Passwords = new ObservableCollection<PasswordEntry>(_repository.GetAllPasswords());
+        _allPasswords = _repository.GetAllPasswords();
+        AppliquerFiltrageEtTri();
+    }
+
+    private void AppliquerFiltrageEtTri()
+    {
+        IEnumerable<PasswordEntry> resultat = _allPasswords;
+
+        if (!string.IsNullOrWhiteSpace(Recherche))
+        {
+            resultat = resultat.Where(p => p.NomCompte.Contains(Recherche, StringComparison.OrdinalIgnoreCase));
+        }
+
+        resultat = _triAscendant
+            ? resultat.OrderBy(p => p.NomCompte)
+            : resultat.OrderByDescending(p => p.NomCompte);
+
+        Passwords = new ObservableCollection<PasswordEntry>(resultat);
         OnPropertyChanged(nameof(Passwords));
     }
 
     public void RefreshPasswords()
     {
-        Passwords = new ObservableCollection<PasswordEntry>(Passwords);
-        OnPropertyChanged(nameof(Passwords));
+        AppliquerFiltrageEtTri();
     }
 
     protected void OnPropertyChanged(string propertyName)
