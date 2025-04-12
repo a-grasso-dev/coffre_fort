@@ -29,6 +29,15 @@
             Command="{Binding SearchCommand}" />
             </StackPanel>
 
+            <!-- Filtres -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock Text="Compte" FontWeight="Bold" Width="150"/>
+                <Button Content="⇅" Width="30"
+                        Command="{Binding ToggleSortCommand}" />
+                <TextBlock Text="Mot de passe" FontWeight="Bold" Margin="20,0,0,0"/>
+            </StackPanel>
+
+
             <!-- Liste des mots de passe -->
             <ListBox x:Name="PasswordListBox"
                      ItemsSource="{Binding Passwords}"
