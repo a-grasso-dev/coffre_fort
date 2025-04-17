@@ -6,6 +6,11 @@
         xmlns:utils="clr-namespace:Coffre_fort.Utils"
         mc:Ignorable="d"
         Title="Coffre-Fort" Height="500" Width="600">
+
+    <Window.Resources>
+        <utils:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
     <Grid>
         <StackPanel Margin="10">
             <!-- Ajouter un mot de passe -->
@@ -36,20 +41,35 @@
                         Command="{Binding ToggleSortCommand}" />
                 <TextBlock Text="Mot de passe" FontWeight="Bold" Margin="20,0,0,0"/>
             </StackPanel>
-
-
             <!-- Liste des mots de passe -->
-            <ListBox x:Name="PasswordListBox"
-                     ItemsSource="{Binding Passwords}"
-                     SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
+            <ListBox ItemsSource="{Binding Passwords}"
+             SelectedItem="{Binding SelectedEntry}"
+             Margin="0,0,0,10">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" Margin="5">
+                            <!-- Nom du compte -->
                             <TextBlock Text="{Binding NomCompte}" Width="150"/>
+
+                            <!-- Mot de passe affiché ou masqué -->
                             <TextBlock Text="{Binding AffichageMotDePasse}" Width="150" Margin="10,0,0,0"/>
-                            <Button Content="👁️" Width="30"
-                                    Command="{Binding DataContext.TogglePasswordVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}" />
+
+                            <!-- Bouton 👁️ Afficher / masquer -->
+                            <Button Content="👁️" Width="30" Margin="5,0,0,0"
+                            Command="{Binding DataContext.TogglePasswordVisibilityCommand,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}" />
+
+                            <!-- Bouton 📋 Copier dans presse-papier -->
+                            <Button Content="📋" Width="30" Margin="5,0,0,0"
+                            Command="{Binding DataContext.CopierMotDePasseCommand,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}" />
+
+                            <!-- Barre de progression -->
+                            <ProgressBar Width="100" Height="10" Margin="5,0,0,0"
+                                 Visibility="{Binding EstCopieEnCours, Converter={StaticResource BoolToVisibilityConverter}}"
+                                 Value="{Binding Progression}" Maximum="100"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
