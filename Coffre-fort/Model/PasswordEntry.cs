@@ -1,26 +1,63 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Coffre_fort.View_model;
 
-public class PasswordEntry
+public class PasswordEntry : INotifyPropertyChanged
 {
     [Key]
     public int Id { get; set; }
 
-    public required string NomCompte { get; set; }
-    public required string MotDePasse { get; set; }
+    public string NomCompte { get; set; }
+    public string MotDePasse { get; set; }
     public DateTime DateAjout { get; set; }
 
     [NotMapped]
-    public string MotDePasseDechiffre => SecurityHelper.Decrypt(MotDePasse);
-    public string MotDePasseMasque => new string('●', SecurityHelper.Decrypt(MotDePasse).Length);
+    private bool _afficherMotDePasse;
+    [NotMapped]
+    public bool AfficherMotDePasse
+    {
+        get => _afficherMotDePasse;
+        set
+        {
+            _afficherMotDePasse = value;
+            OnPropertyChanged(nameof(AfficherMotDePasse));
+            OnPropertyChanged(nameof(AffichageMotDePasse));
+        }
+    }
 
     [NotMapped]
-    public bool AfficherMotDePasse { get; set; } = false;
+    private double _progression;
+    [NotMapped]
+    public double Progression
+    {
+        get => _progression;
+        set
+        {
+            _progression = value;
+            OnPropertyChanged(nameof(Progression));
+        }
+    }
+
+    [NotMapped]
+    private bool _estCopieEnCours;
+    [NotMapped]
+    public bool EstCopieEnCours
+    {
+        get => _estCopieEnCours;
+        set
+        {
+            _estCopieEnCours = value;
+            OnPropertyChanged(nameof(EstCopieEnCours));
+        }
+    }
 
     [NotMapped]
     public string AffichageMotDePasse =>
-        AfficherMotDePasse ? SecurityHelper.Decrypt(MotDePasse) : new string('●', SecurityHelper.Decrypt(MotDePasse).Length);
+        AfficherMotDePasse ? SecurityHelper.Decrypt(MotDePasse) : "••••••••";
 
-
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged(string name)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

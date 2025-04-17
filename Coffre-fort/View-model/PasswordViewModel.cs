@@ -1,12 +1,20 @@
-﻿using System.Collections.ObjectModel;
+﻿// /ViewModel/PasswordViewModel.cs
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using Coffre_fort.View_model;
+using Coffre_fort.View_model;   // SecurityHelper
+using Coffre_fort.Utils;        // RelayCommand
 
 public class PasswordViewModel : INotifyPropertyChanged
 {
     private readonly PasswordRepository _repository;
     private ObservableCollection<PasswordEntry> _passwords;
+    private List<PasswordEntry> _allPasswords = new();
     private PasswordEntry _selectedEntry;
     private string _nomCompte;
     private string _motDePasse;
@@ -14,8 +22,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     private string _recherche;
     private bool _triAscendant = true;
 
-    private List<PasswordEntry> _allPasswords;
-
+    // Propriétés liées à la Vue
     public ObservableCollection<PasswordEntry> Passwords
     {
         get => _passwords;
@@ -52,15 +59,15 @@ public class PasswordViewModel : INotifyPropertyChanged
         set { _recherche = value; OnPropertyChanged(nameof(Recherche)); AppliquerFiltrageEtTri(); }
     }
 
+    // Commandes MVVM
     public ICommand TogglePasswordVisibilityCommand { get; }
     public ICommand AddPasswordCommand { get; }
     public ICommand UpdatePasswordCommand { get; }
     public ICommand DeletePasswordCommand { get; }
-    public ICommand SearchCommand { get; }
     public ICommand ToggleSortCommand { get; }
+    public ICommand CopierMotDePasseCommand { get; }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
+    // Constructeur
     public PasswordViewModel()
     {
         _repository = new PasswordRepository();
@@ -74,7 +81,7 @@ public class PasswordViewModel : INotifyPropertyChanged
             }
         });
 
-        AddPasswordCommand = new RelayCommand(param =>
+        AddPasswordCommand = new RelayCommand(_ =>
         {
             if (!string.IsNullOrWhiteSpace(NomCompte) && !string.IsNullOrWhiteSpace(MotDePasse))
             {
@@ -84,7 +91,7 @@ public class PasswordViewModel : INotifyPropertyChanged
             }
         });
 
-        UpdatePasswordCommand = new RelayCommand(param =>
+        UpdatePasswordCommand = new RelayCommand(_ =>
         {
             if (SelectedEntry != null && !string.IsNullOrWhiteSpace(NouveauMotDePasse))
             {
@@ -95,52 +102,66 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         DeletePasswordCommand = new RelayCommand(param =>
         {
-            if (param is PasswordEntry entry)
-            {
-                DeletePassword(entry);
-            }
+            if (param is PasswordEntry entry) DeletePassword(entry);
         });
 
-        SearchCommand = new RelayCommand(param =>
-        {
-            AppliquerFiltrageEtTri();
-        });
-
-        ToggleSortCommand = new RelayCommand(param =>
+        ToggleSortCommand = new RelayCommand(_ =>
         {
             _triAscendant = !_triAscendant;
             AppliquerFiltrageEtTri();
         });
 
+        CopierMotDePasseCommand = new RelayCommand(async param =>
+        {
+            if (param is not PasswordEntry entry) return;
+
+            string motClair = SecurityHelper.Decrypt(entry.MotDePasse);
+            Clipboard.SetText(motClair);
+
+            entry.EstCopieEnCours = true;
+            entry.Progression = 100;
+            RefreshPasswords();
+
+            // Copier pendant 12 secondes
+            for (int i = 0; i <= 120; i++)
+            {
+                await Task.Delay(100);
+                entry.Progression = 100 - i * (100.0 / 120);
+                RefreshPasswords();
+            }
+
+            Clipboard.Clear();
+            entry.EstCopieEnCours = false;
+            RefreshPasswords();
+        });
+
         LoadPasswords();
     }
 
-    public void AddPassword(string nomCompte, string motDePasse)
+    // CRUD
+    public void AddPassword(string nom, string mdp)
     {
-        string motDePasseChiffre = SecurityHelper.Encrypt(motDePasse);
-        _repository.AddPassword(nomCompte, motDePasseChiffre);
+        string mdpChiffre = SecurityHelper.Encrypt(mdp);
+        _repository.AddPassword(nom, mdpChiffre);
         LoadPasswords();
     }
 
-    public void UpdatePassword(PasswordEntry entryToUpdate, string newPassword)
+    public void UpdatePassword(PasswordEntry entry, string nouveauMdpClair)
     {
-        if (entryToUpdate == null || string.IsNullOrEmpty(newPassword))
-            return;
-
-        string motDePasseChiffre = SecurityHelper.Encrypt(newPassword);
-        _repository.UpdatePassword(entryToUpdate.Id, motDePasseChiffre);
+        if (entry == null) return;
+        string mdpChiffre = SecurityHelper.Encrypt(nouveauMdpClair);
+        _repository.UpdatePassword(entry.Id, mdpChiffre);
         LoadPasswords();
     }
 
     public void DeletePassword(PasswordEntry entry)
     {
-        if (entry == null)
-            return;
-
+        if (entry == null) return;
         _repository.DeletePassword(entry.Id);
         LoadPasswords();
     }
 
+    // Chargement / Filtre / Tri
     private void LoadPasswords()
     {
         _allPasswords = _repository.GetAllPasswords();
@@ -152,23 +173,19 @@ public class PasswordViewModel : INotifyPropertyChanged
         IEnumerable<PasswordEntry> resultat = _allPasswords;
 
         if (!string.IsNullOrWhiteSpace(Recherche))
-        {
             resultat = resultat.Where(p => p.NomCompte.Contains(Recherche, StringComparison.OrdinalIgnoreCase));
-        }
 
         resultat = _triAscendant
             ? resultat.OrderBy(p => p.NomCompte)
             : resultat.OrderByDescending(p => p.NomCompte);
 
         Passwords = new ObservableCollection<PasswordEntry>(resultat);
-        OnPropertyChanged(nameof(Passwords));
     }
 
-    public void RefreshPasswords()
-    {
-        AppliquerFiltrageEtTri();
-    }
+    public void RefreshPasswords() => OnPropertyChanged(nameof(Passwords));
 
-    protected void OnPropertyChanged(string propertyName)
+    // INotifyPropertyChanged
+    public event PropertyChangedEventHandler PropertyChanged;
+    private void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
