@@ -13,6 +13,9 @@ public class PasswordEntry : INotifyPropertyChanged
     public string MotDePasse { get; set; }
     public DateTime DateAjout { get; set; }
 
+    private string _tags;
+    public string Tags { get; set; } = "";
+
     [NotMapped]
     private bool _afficherMotDePasse;
     [NotMapped]

@@ -21,6 +21,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     private string _nouveauMotDePasse;
     private string _recherche;
     private bool _triAscendant = true;
+    private string _tags;
 
     // Propriétés liées à la Vue
     public ObservableCollection<PasswordEntry> Passwords
@@ -57,6 +58,12 @@ public class PasswordViewModel : INotifyPropertyChanged
     {
         get => _recherche;
         set { _recherche = value; OnPropertyChanged(nameof(Recherche)); AppliquerFiltrageEtTri(); }
+    }
+
+    public string Tags
+    {
+        get => _tags;
+        set { _tags = value; OnPropertyChanged(nameof(Tags)); }
     }
 
     // Commandes MVVM
@@ -142,7 +149,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     public void AddPassword(string nom, string mdp)
     {
         string mdpChiffre = SecurityHelper.Encrypt(mdp);
-        _repository.AddPassword(nom, mdpChiffre);
+        _repository.AddPassword(nom, mdpChiffre, Tags);
         LoadPasswords();
     }
 
@@ -173,7 +180,11 @@ public class PasswordViewModel : INotifyPropertyChanged
         IEnumerable<PasswordEntry> resultat = _allPasswords;
 
         if (!string.IsNullOrWhiteSpace(Recherche))
-            resultat = resultat.Where(p => p.NomCompte.Contains(Recherche, StringComparison.OrdinalIgnoreCase));
+        {
+            resultat = resultat.Where(p =>
+                p.NomCompte.Contains(Recherche, StringComparison.OrdinalIgnoreCase) ||
+                (p.Tags != null && p.Tags.Contains(Recherche, StringComparison.OrdinalIgnoreCase)));
+        }
 
         resultat = _triAscendant
             ? resultat.OrderBy(p => p.NomCompte)
@@ -181,6 +192,7 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         Passwords = new ObservableCollection<PasswordEntry>(resultat);
     }
+
 
     public void RefreshPasswords() => OnPropertyChanged(nameof(Passwords));
 
