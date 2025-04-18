@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class PasswordRepository
 {
-    public void AddPassword(string nomCompte, string motDePasse)
+    public void AddPassword(string nomCompte, string motDePasse, string tags)
     {
         using (var db = new PasswordDbContext())
         {
@@ -13,7 +13,8 @@ public class PasswordRepository
             {
                 NomCompte = nomCompte,
                 MotDePasse = motDePasse,
-                DateAjout = DateTime.Now
+                DateAjout = DateTime.Now,
+                Tags = tags
             };
             db.passwordentry.Add(entry);
             db.SaveChanges();

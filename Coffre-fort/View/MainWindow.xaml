@@ -5,91 +5,95 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:utils="clr-namespace:Coffre_fort.Utils"
         mc:Ignorable="d"
-        Title="Coffre-Fort" Height="500" Width="600">
+        Title="Coffre-Fort" Height="600" Width="650">
 
     <Window.Resources>
         <utils:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
     <Grid>
-        <StackPanel Margin="10">
-            <!-- Ajouter un mot de passe -->
-            <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
-            <Label Content="Nom du compte" />
-            <TextBox Width="200" Text="{Binding NomCompte, UpdateSourceTrigger=PropertyChanged}" />
-            <Label Content="Mot de passe" />
-            <PasswordBox Width="200"
-                     utils:PasswordBoxHelper.BindPassword="True"
-                     utils:PasswordBoxHelper.BoundPassword="{Binding MotDePasse, Mode=TwoWay}" />
-            <Button Content="Ajouter"
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                <!-- Ajouter un mot de passe -->
+                <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
+
+                <Label Content="Nom du compte" />
+                <TextBox Width="200" Text="{Binding NomCompte, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Content="Mot de passe" />
+                <PasswordBox Width="200"
+                         utils:PasswordBoxHelper.BindPassword="True"
+                         utils:PasswordBoxHelper.BoundPassword="{Binding MotDePasse, Mode=TwoWay}" />
+
+                <Label Content="Tags (mots-clés)" />
+                <TextBox Width="200" Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Button Content="Ajouter"
                     Width="100" Margin="0,5,0,10"
                     Command="{Binding AddPasswordCommand}" />
 
-            <!-- Recherche -->
-            <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
-                <TextBox Width="200"
-             Text="{Binding Recherche, UpdateSourceTrigger=PropertyChanged}" />
-                <Button Content="Rechercher"
-            Width="100" Margin="10,0,0,0"
-            Command="{Binding SearchCommand}" />
-            </StackPanel>
+                <!-- Recherche -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+                    <TextBox Width="200" Text="{Binding Recherche, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Content="Rechercher" Width="100" Margin="10,0,0,0" Command="{Binding SearchCommand}" />
+                </StackPanel>
 
-            <!-- Filtres -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="Compte" FontWeight="Bold" Width="150"/>
-                <Button Content="⇅" Width="30"
-                        Command="{Binding ToggleSortCommand}" />
-                <TextBlock Text="Mot de passe" FontWeight="Bold" Margin="20,0,0,0"/>
-            </StackPanel>
-            <!-- Liste des mots de passe -->
-            <ListBox ItemsSource="{Binding Passwords}"
-             SelectedItem="{Binding SelectedEntry}"
-             Margin="0,0,0,10">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <!-- Nom du compte -->
-                            <TextBlock Text="{Binding NomCompte}" Width="150"/>
+                <!-- Filtres -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Compte" FontWeight="Bold" Width="150"/>
+                    <Button Content="⇅" Width="30" Command="{Binding ToggleSortCommand}" />
+                    <TextBlock Text="Mot de passe" FontWeight="Bold" Margin="20,0,0,0"/>
+                </StackPanel>
 
-                            <!-- Mot de passe affiché ou masqué -->
-                            <TextBlock Text="{Binding AffichageMotDePasse}" Width="150" Margin="10,0,0,0"/>
+                <!-- Liste des mots de passe -->
+                <ListBox ItemsSource="{Binding Passwords}"
+                     SelectedItem="{Binding SelectedEntry}"
+                     Margin="0,0,0,10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <TextBlock Text="{Binding NomCompte}" Width="150" />
+                                <TextBlock Text="{Binding Tags}" Width="150" Margin="10,0,0,0" Foreground="DarkGray" FontStyle="Italic" />
+                                <TextBlock Text="{Binding AffichageMotDePasse}" Width="150" Margin="10,0,0,0" />
 
-                            <!-- Bouton 👁️ Afficher / masquer -->
-                            <Button Content="👁️" Width="30" Margin="5,0,0,0"
-                            Command="{Binding DataContext.TogglePasswordVisibilityCommand,
-                                              RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}" />
+                                <Button Content="👁️" Width="30" Margin="5,0,0,0"
+                                    Command="{Binding DataContext.TogglePasswordVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
 
-                            <!-- Bouton 📋 Copier dans presse-papier -->
-                            <Button Content="📋" Width="30" Margin="5,0,0,0"
-                            Command="{Binding DataContext.CopierMotDePasseCommand,
-                                              RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}" />
+                                <Button Content="📋" Width="30" Margin="5,0,0,0"
+                                    Command="{Binding DataContext.CopierMotDePasseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding}" />
 
-                            <!-- Barre de progression -->
-                            <ProgressBar Width="100" Height="10" Margin="5,0,0,0"
-                                 Visibility="{Binding EstCopieEnCours, Converter={StaticResource BoolToVisibilityConverter}}"
-                                 Value="{Binding Progression}" Maximum="100"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                <ProgressBar Width="100" Height="10" Margin="5,0,0,0"
+                                         Visibility="{Binding EstCopieEnCours, Converter={StaticResource BoolToVisibilityConverter}}"
+                                         Value="{Binding Progression}" Maximum="100" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-            <!-- Modifier le mot de passe du compte sélectionné -->
-            <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold" Margin="0,10,0,0"/>
-            <Label Content="Nouveau mot de passe" />
-            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                <!-- Modifier un mot de passe -->
+                <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold" Margin="0,10,0,0" />
+
+                <Label Content="Nouveau mot de passe" />
                 <PasswordBox Width="200" Margin="0,0,5,0"
-                             utils:PasswordBoxHelper.BindPassword="True"
-                             utils:PasswordBoxHelper.BoundPassword="{Binding NouveauMotDePasse, Mode=TwoWay}" />
-                <Button Content="Mettre à jour"
+                         utils:PasswordBoxHelper.BindPassword="True"
+                         utils:PasswordBoxHelper.BoundPassword="{Binding NouveauMotDePasse, Mode=TwoWay}" />
+
+                <Label Content="Tags (mots-clés)" />
+                <TextBox Width="200" Text="{Binding SelectedEntry.Tags, Mode=TwoWay}" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                    <Button Content="Mettre à jour"
                         Command="{Binding UpdatePasswordCommand}"
-                        Width="100" Margin="0,0,5,0"/>
-                <Button Content="Supprimer"
+                        Width="100" Margin="0,0,5,0" />
+
+                    <Button Content="Supprimer"
                         Command="{Binding DeletePasswordCommand}"
                         CommandParameter="{Binding SelectedEntry}"
-                        Width="100"/>
+                        Width="100" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
