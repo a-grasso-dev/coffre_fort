@@ -73,6 +73,8 @@ public class PasswordViewModel : INotifyPropertyChanged
     public ICommand DeletePasswordCommand { get; }
     public ICommand ToggleSortCommand { get; }
     public ICommand CopierMotDePasseCommand { get; }
+    public ICommand RemoveTagCommand { get; }
+    public ICommand UpdateTagsCommand { get; }
 
     // Constructeur
     public PasswordViewModel()
@@ -142,6 +144,37 @@ public class PasswordViewModel : INotifyPropertyChanged
             RefreshPasswords();
         });
 
+        RemoveTagCommand = new RelayCommand(param =>
+        {
+            if (param is Tuple<PasswordEntry, string> tuple)
+            {
+                var entry = tuple.Item1;
+                var tagToRemove = tuple.Item2;
+
+                if (entry != null && !string.IsNullOrEmpty(tagToRemove))
+                {
+                    var tags = entry.Tags?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(t => t.Trim())
+                                         .Where(t => !string.Equals(t, tagToRemove, StringComparison.OrdinalIgnoreCase))
+                                         .ToList();
+
+                    entry.Tags = string.Join(", ", tags);
+                    _repository.UpdateTags(entry.Id, entry.Tags);
+                    RefreshPasswords();
+                }
+            }
+        });
+
+        UpdateTagsCommand = new RelayCommand(_ =>
+        {
+            if (SelectedEntry != null)
+            {
+                _repository.UpdateTags(SelectedEntry.Id, SelectedEntry.Tags);
+                LoadPasswords();
+            }
+        });
+
+
         LoadPasswords();
     }
 
@@ -160,6 +193,7 @@ public class PasswordViewModel : INotifyPropertyChanged
         _repository.UpdatePassword(entry.Id, mdpChiffre);
         LoadPasswords();
     }
+
 
     public void DeletePassword(PasswordEntry entry)
     {
@@ -192,6 +226,21 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         Passwords = new ObservableCollection<PasswordEntry>(resultat);
     }
+
+    public void SupprimerTag(PasswordEntry entry, string tagASupprimer)
+    {
+        if (entry == null || string.IsNullOrWhiteSpace(entry.Tags)) return;
+
+        var tags = entry.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(t => t.Trim())
+                             .Where(t => !string.Equals(t, tagASupprimer, StringComparison.OrdinalIgnoreCase))
+                             .ToList();
+
+        entry.Tags = string.Join(", ", tags);
+        _repository.UpdateTags(entry.Id, entry.Tags);
+        RefreshPasswords();
+    }
+
 
 
     public void RefreshPasswords() => OnPropertyChanged(nameof(Passwords));
