@@ -226,7 +226,7 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         Passwords = new ObservableCollection<PasswordEntry>(resultat);
     }
-
+    
     public void SupprimerTag(PasswordEntry entry, string tagASupprimer)
     {
         if (entry == null || string.IsNullOrWhiteSpace(entry.Tags)) return;
@@ -240,8 +240,6 @@ public class PasswordViewModel : INotifyPropertyChanged
         _repository.UpdateTags(entry.Id, entry.Tags);
         RefreshPasswords();
     }
-
-
 
     public void RefreshPasswords() => OnPropertyChanged(nameof(Passwords));
 

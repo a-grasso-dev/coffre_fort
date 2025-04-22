@@ -14,6 +14,7 @@ public class PasswordEntry : INotifyPropertyChanged
     public DateTime DateAjout { get; set; }
 
     private string _tags;
+    
     public string Tags
     {
         get => _tags;
@@ -24,7 +25,6 @@ public class PasswordEntry : INotifyPropertyChanged
             OnPropertyChanged(nameof(TagsList));
         }
     }
-
 
     [NotMapped]
     private bool _afficherMotDePasse;
