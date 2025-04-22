@@ -14,7 +14,17 @@ public class PasswordEntry : INotifyPropertyChanged
     public DateTime DateAjout { get; set; }
 
     private string _tags;
-    public string Tags { get; set; } = "";
+    
+    public string Tags
+    {
+        get => _tags;
+        set
+        {
+            _tags = value;
+            OnPropertyChanged(nameof(Tags));
+            OnPropertyChanged(nameof(TagsList));
+        }
+    }
 
     [NotMapped]
     private bool _afficherMotDePasse;
@@ -63,4 +73,9 @@ public class PasswordEntry : INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged(string name)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    public List<string> TagsList => string.IsNullOrWhiteSpace(Tags)
+    ? new List<string>()
+    : Tags.Split(',').Select(t => t.Trim()).ToList();
+
 }

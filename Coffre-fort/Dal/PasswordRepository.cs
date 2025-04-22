@@ -21,6 +21,7 @@ public class PasswordRepository
         }
     }
 
+
     public List<PasswordEntry> GetAllPasswords()
     {
         using (var db = new PasswordDbContext())
@@ -50,7 +51,6 @@ public class PasswordRepository
         }
     }
 
-
     public void DeletePassword(int id)
     {
         using (var db = new PasswordDbContext())
@@ -63,6 +63,16 @@ public class PasswordRepository
             }
         }
     }
-
-
+    public void UpdateTags(int id, string newTags)
+    {
+        using (var db = new PasswordDbContext())
+        {
+            var entry = db.passwordentry.FirstOrDefault(p => p.Id == id);
+            if (entry != null)
+            {
+                entry.Tags = newTags;
+                db.SaveChanges();
+            }
+        }
+    }
 }
