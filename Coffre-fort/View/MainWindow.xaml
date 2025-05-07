@@ -15,124 +15,120 @@
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
-                <!-- Ajouter un mot de passe -->
-                <Label Content="Ajouter un mot de passe" FontWeight="Bold"/>
+                <!-- Formulaire d'ajout -->
+                <Label Content="Ajouter un mot de passe" FontWeight="Bold" />
 
                 <Label Content="Nom du compte" />
                 <TextBox Width="200" Text="{Binding NomCompte, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Content="Mot de passe" />
                 <PasswordBox Width="200"
-                         utils:PasswordBoxHelper.BindPassword="True"
-                         utils:PasswordBoxHelper.BoundPassword="{Binding MotDePasse, Mode=TwoWay}" />
+                             utils:PasswordBoxHelper.BindPassword="True"
+                             utils:PasswordBoxHelper.BoundPassword="{Binding MotDePasse, Mode=TwoWay}" />
 
                 <Label Content="Tags (mots-clés)" />
                 <TextBox Width="200" Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}" />
 
-                <Button Content="Ajouter"
-                    Width="100" Margin="0,5,0,10"
-                    Command="{Binding AddPasswordCommand}" />
-
-                <!-- Recherche -->
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
-                    <TextBox Width="200" Text="{Binding Recherche, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Content="Rechercher" Width="100" Margin="10,0,0,0" Command="{Binding SearchCommand}" />
-                </StackPanel>
-
-                <!-- Filtres -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock Text="Compte" FontWeight="Bold" Width="150"/>
-                    <Button Content="⇅" Width="30" Command="{Binding ToggleSortCommand}" />
-                    <TextBlock Text="Mot de passe" FontWeight="Bold" Margin="20,0,0,0"/>
-                </StackPanel>
+                <Button Content="Ajouter" Width="100" Margin="0,5,0,10" Command="{Binding AddPasswordCommand}" />
 
                 <!-- Liste des mots de passe -->
                 <ListBox ItemsSource="{Binding Passwords}"
-                     SelectedItem="{Binding SelectedEntry}"
-                     Margin="0,0,0,10">
+                         SelectedItem="{Binding SelectedEntry}"
+                         Margin="0,0,0,10">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical" Margin="5">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding NomCompte}" Width="150" />
-                                    <TextBlock Text="{Binding AffichageMotDePasse}" Width="150" Margin="10,0,0,0" />
+                            <Border BorderThickness="1" BorderBrush="Gray" Padding="10" Margin="5">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                                    <!-- Bouton 👁️ -->
-                                    <Button Content="👁️" Width="30" Margin="5,0,0,0"
-                                        Command="{Binding DataContext.TogglePasswordVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}" />
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                    <!-- Bouton 📋 -->
-                                    <Button Content="📋" Width="30" Margin="5,0,0,0"
-                                        Command="{Binding DataContext.CopierMotDePasseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}" />
+                                    <!-- Nom du compte -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Identifiant :" FontWeight="Bold" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding NomCompte}" />
+
+                                    <!-- Mot de passe -->
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Mot de passe :" FontWeight="Bold" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AffichageMotDePasse}" />
+
+                                    <!-- Boutons -->
+                                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Left">
+                                        <Button Content="Afficher/Masquer mot de passe" Width="180" Margin="0,0,5,0"
+                                                Command="{Binding DataContext.TogglePasswordVisibilityCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+
+                                        <Button Content="Copier mot de passe" Width="150" Margin="0,0,5,0"
+                                                Command="{Binding DataContext.CopierMotDePasseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+
+                                        <Button Content="Copier identifiant" Width="150"
+                                                Command="{Binding DataContext.CopierIdentifiantCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                    </StackPanel>
 
                                     <!-- Barre de progression -->
-                                    <ProgressBar Width="100" Height="10" Margin="5,0,0,0"
-                                             Visibility="{Binding EstCopieEnCours, Converter={StaticResource BoolToVisibilityConverter}}"
-                                             Value="{Binding Progression}" Maximum="100" />
-                                </StackPanel>
+                                    <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" Width="100" Height="10" Margin="0,5,0,0"
+                                                 Visibility="{Binding EstCopieEnCours, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Value="{Binding Progression}" Maximum="100" />
 
-                                <!-- Tags avec désaffectation -->
-                                <ItemsControl ItemsSource="{Binding TagsList}" Margin="0,5,0,0">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Background="LightGray" CornerRadius="10" Margin="2" Padding="5" VerticalAlignment="Center">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding}" Margin="0,0,5,0" />
-                                                    <Button Content="❌" Padding="0" Margin="0" Width="16" Height="16">
-                                                        <Button.Command>
-                                                            <Binding Path="DataContext.RemoveTagCommand" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                                        </Button.Command>
-                                                        <Button.CommandParameter>
-                                                            <MultiBinding Converter="{StaticResource TagRemoveConverter}">
-                                                                <Binding />
-                                                                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ListBoxItem}" />
-                                                            </MultiBinding>
-                                                        </Button.CommandParameter>
-                                                    </Button>
-                                                </StackPanel>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
+                                    <!-- Tags avec désaffectation -->
+                                    <ItemsControl Grid.Row="4" Grid.ColumnSpan="2" ItemsSource="{Binding TagsList}" Margin="0,5,0,0">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="LightGray" CornerRadius="10" Margin="2" Padding="5" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding}" Margin="0,0,5,0" />
+                                                        <Button Content="❌" Padding="0" Margin="0" Width="16" Height="16">
+                                                            <Button.Command>
+                                                                <Binding Path="DataContext.RemoveTagCommand" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                                            </Button.Command>
+                                                            <Button.CommandParameter>
+                                                                <MultiBinding Converter="{StaticResource TagRemoveConverter}">
+                                                                    <Binding />
+                                                                    <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ListBoxItem}" />
+                                                                </MultiBinding>
+                                                            </Button.CommandParameter>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
                 <!-- Modifier un mot de passe -->
-                <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold" Margin="0,10,0,0" />
+                <Label Content="Modifier le mot de passe du compte sélectionné" FontWeight="Bold" />
 
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                    <PasswordBox Width="200" Margin="0,0,10,0"
+                <PasswordBox Width="200" Margin="0,0,10,0"
                              utils:PasswordBoxHelper.BindPassword="True"
                              utils:PasswordBoxHelper.BoundPassword="{Binding NouveauMotDePasse, Mode=TwoWay}" />
-                    <Button Content="Mettre à jour le mot de passe"
-                            Command="{Binding UpdatePasswordCommand}"
-                            Width="180" />
-                </StackPanel>
+                <Button Content="Mettre à jour le mot de passe" Command="{Binding UpdatePasswordCommand}" Width="180" />
 
                 <!-- Modifier les tags -->
                 <Label Content="Modifier les tags (mots-clés)" FontWeight="Bold" />
+                <TextBox Width="200" Text="{Binding SelectedEntry.Tags, Mode=TwoWay}" Margin="0,5,0,5" />
+                <Button Content="Mettre à jour les tags" Command="{Binding UpdateTagsCommand}" Width="180" />
 
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                    <TextBox Width="200" Text="{Binding SelectedEntry.Tags, Mode=TwoWay}" Margin="0,0,10,0" />
-                    <Button Content="Mettre à jour les tags"
-                            Command="{Binding UpdateTagsCommand}"
-                            Width="180" />
-                </StackPanel>
-
-                <!-- Supprimer le mot de passe -->
-                <Button Content="Supprimer le mot de passe sélectionné"
-                        Command="{Binding DeletePasswordCommand}"
-                        CommandParameter="{Binding SelectedEntry}"
-                        Width="250" Margin="0,10,0,0" />
+                <!-- Supprimer -->
+                <Button Content="Supprimer le mot de passe sélectionné" Command="{Binding DeletePasswordCommand}" CommandParameter="{Binding SelectedEntry}" Width="250" Margin="0,10,0,0" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
