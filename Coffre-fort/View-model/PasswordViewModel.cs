@@ -1,5 +1,4 @@
-﻿// /ViewModel/PasswordViewModel.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Coffre_fort.View_model;   // SecurityHelper
-using Coffre_fort.Utils;        // RelayCommand
+using Coffre_fort.View_model;
+using Coffre_fort.Utils;
 
 public class PasswordViewModel : INotifyPropertyChanged
 {
@@ -23,7 +22,6 @@ public class PasswordViewModel : INotifyPropertyChanged
     private bool _triAscendant = true;
     private string _tags;
 
-    // Propriétés liées à la Vue
     public ObservableCollection<PasswordEntry> Passwords
     {
         get => _passwords;
@@ -66,17 +64,18 @@ public class PasswordViewModel : INotifyPropertyChanged
         set { _tags = value; OnPropertyChanged(nameof(Tags)); }
     }
 
-    // Commandes MVVM
     public ICommand TogglePasswordVisibilityCommand { get; }
     public ICommand AddPasswordCommand { get; }
     public ICommand UpdatePasswordCommand { get; }
+    public ICommand UpdateTagsCommand { get; }
     public ICommand DeletePasswordCommand { get; }
     public ICommand ToggleSortCommand { get; }
     public ICommand CopierMotDePasseCommand { get; }
+    public ICommand CopierIdentifiantCommand { get; }
     public ICommand RemoveTagCommand { get; }
-    public ICommand UpdateTagsCommand { get; }
 
-    // Constructeur
+    public event PropertyChangedEventHandler PropertyChanged;
+
     public PasswordViewModel()
     {
         _repository = new PasswordRepository();
@@ -109,6 +108,15 @@ public class PasswordViewModel : INotifyPropertyChanged
             }
         });
 
+        UpdateTagsCommand = new RelayCommand(_ =>
+        {
+            if (SelectedEntry != null)
+            {
+                _repository.UpdateTags(SelectedEntry.Id, SelectedEntry.Tags);
+                LoadPasswords();
+            }
+        });
+
         DeletePasswordCommand = new RelayCommand(param =>
         {
             if (param is PasswordEntry entry) DeletePassword(entry);
@@ -131,7 +139,6 @@ public class PasswordViewModel : INotifyPropertyChanged
             entry.Progression = 100;
             RefreshPasswords();
 
-            // Copier pendant 12 secondes
             for (int i = 0; i <= 120; i++)
             {
                 await Task.Delay(100);
@@ -142,6 +149,14 @@ public class PasswordViewModel : INotifyPropertyChanged
             Clipboard.Clear();
             entry.EstCopieEnCours = false;
             RefreshPasswords();
+        });
+
+        CopierIdentifiantCommand = new RelayCommand(param =>
+        {
+            if (param is PasswordEntry entry)
+            {
+                Clipboard.SetText(entry.NomCompte);
+            }
         });
 
         RemoveTagCommand = new RelayCommand(param =>
@@ -165,20 +180,9 @@ public class PasswordViewModel : INotifyPropertyChanged
             }
         });
 
-        UpdateTagsCommand = new RelayCommand(_ =>
-        {
-            if (SelectedEntry != null)
-            {
-                _repository.UpdateTags(SelectedEntry.Id, SelectedEntry.Tags);
-                LoadPasswords();
-            }
-        });
-
-
         LoadPasswords();
     }
 
-    // CRUD
     public void AddPassword(string nom, string mdp)
     {
         string mdpChiffre = SecurityHelper.Encrypt(mdp);
@@ -194,7 +198,6 @@ public class PasswordViewModel : INotifyPropertyChanged
         LoadPasswords();
     }
 
-
     public void DeletePassword(PasswordEntry entry)
     {
         if (entry == null) return;
@@ -202,7 +205,6 @@ public class PasswordViewModel : INotifyPropertyChanged
         LoadPasswords();
     }
 
-    // Chargement / Filtre / Tri
     private void LoadPasswords()
     {
         _allPasswords = _repository.GetAllPasswords();
@@ -226,7 +228,7 @@ public class PasswordViewModel : INotifyPropertyChanged
 
         Passwords = new ObservableCollection<PasswordEntry>(resultat);
     }
-    
+
     public void SupprimerTag(PasswordEntry entry, string tagASupprimer)
     {
         if (entry == null || string.IsNullOrWhiteSpace(entry.Tags)) return;
@@ -243,8 +245,6 @@ public class PasswordViewModel : INotifyPropertyChanged
 
     public void RefreshPasswords() => OnPropertyChanged(nameof(Passwords));
 
-    // INotifyPropertyChanged
-    public event PropertyChangedEventHandler PropertyChanged;
     private void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
