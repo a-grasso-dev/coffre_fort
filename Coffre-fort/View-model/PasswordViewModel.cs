@@ -1,8 +1,10 @@
-﻿using System;
+﻿// ViewModel: ajout pour l'export CSV, XML ou Excel
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -21,6 +23,17 @@ public class PasswordViewModel : INotifyPropertyChanged
     private string _recherche;
     private bool _triAscendant = true;
     private string _tags;
+
+    private string _selectedExportFormat = "CSV";
+    public string SelectedExportFormat
+    {
+        get => _selectedExportFormat;
+        set
+        {
+            _selectedExportFormat = value;
+            OnPropertyChanged(nameof(SelectedExportFormat));
+        }
+    }
 
     public ObservableCollection<PasswordEntry> Passwords
     {
@@ -73,6 +86,7 @@ public class PasswordViewModel : INotifyPropertyChanged
     public ICommand CopierMotDePasseCommand { get; }
     public ICommand CopierIdentifiantCommand { get; }
     public ICommand RemoveTagCommand { get; }
+    public ICommand ExportCommand { get; }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -179,6 +193,8 @@ public class PasswordViewModel : INotifyPropertyChanged
                 }
             }
         });
+
+        ExportCommand = new RelayCommand(_ => PasswordExporter.Export(Passwords, SelectedExportFormat));
 
         LoadPasswords();
     }
